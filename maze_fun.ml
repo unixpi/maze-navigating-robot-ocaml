@@ -56,6 +56,8 @@ let rec lets_play n = match n with
   | _ -> print_char (make_naive_move (read_line ())); print_newline(); (lets_play (n-1));;
 
 
+(* testing  *)
+  
 let maze_3_4 = ['#';'#';'#';'#';
 	        '#';'A';'B';'#';
 	        '#';'#';'#';'#']
@@ -70,44 +72,42 @@ let current_3_by_4_view_letters = ref ['A';'#';'#';'#';'B'] (* positions [6; 2; 
 
 let current_3_by_4_view_positions = ref [6;2;10;5;7]
 					  									  
-let update_3_by_4_view_positions current_view_positions move = match move with
-  | 'U' -> current_3_by_4_view_positions := [((get_kth_element_from_list !current_3_by_4_view_positions 1)-4);
+let update_3_by_4_view_positions c move = match move with
+  | 'U' -> c := [((get_kth_element_from_list !current_3_by_4_view_positions 1)-4);
 					     ((get_kth_element_from_list !current_3_by_4_view_positions 2)-4);
 					     ((get_kth_element_from_list !current_3_by_4_view_positions 3)-4);
 					     ((get_kth_element_from_list !current_3_by_4_view_positions 4)-4);
 					     ((get_kth_element_from_list !current_3_by_4_view_positions 5)-4)]
 					      
-  | 'D' -> current_3_by_4_view_positions := [((get_kth_element_from_list !current_3_by_4_view_positions 1)+4);
+  | 'D' -> c := [((get_kth_element_from_list !current_3_by_4_view_positions 1)+4);
 					     ((get_kth_element_from_list !current_3_by_4_view_positions 2)+4);
 					     ((get_kth_element_from_list !current_3_by_4_view_positions 3)+4);
 					     ((get_kth_element_from_list !current_3_by_4_view_positions 4)+4);
 					     ((get_kth_element_from_list !current_3_by_4_view_positions 5)+4)]
   
-  | 'L' -> current_3_by_4_view_positions := [((get_kth_element_from_list !current_3_by_4_view_positions 1)-1);
+  | 'L' -> c := [((get_kth_element_from_list !current_3_by_4_view_positions 1)-1);
 					     ((get_kth_element_from_list !current_3_by_4_view_positions 2)-1);
 					     ((get_kth_element_from_list !current_3_by_4_view_positions 3)-1);
 					     ((get_kth_element_from_list !current_3_by_4_view_positions 4)-1);
 					     ((get_kth_element_from_list !current_3_by_4_view_positions 5)-1)]
  
-  | 'R' -> current_3_by_4_view_positions := [((get_kth_element_from_list !current_3_by_4_view_positions 1)+1);
+  | 'R' -> c := [((get_kth_element_from_list !current_3_by_4_view_positions 1)+1);
 					     ((get_kth_element_from_list !current_3_by_4_view_positions 2)+1);
 					     ((get_kth_element_from_list !current_3_by_4_view_positions 3)+1);
 					     ((get_kth_element_from_list !current_3_by_4_view_positions 4)+1);
 					     ((get_kth_element_from_list !current_3_by_4_view_positions 5)+1)]
 
-let update_3_by_4_view_letters () = current_3_by_4_view_letters := [k_3_4 (get_kth_element_from_list !current_3_by_4_view_positions 1);
+let update_3_by_4_view_letters  = (fun c ->
+    c := [k_3_4 (get_kth_element_from_list !current_3_by_4_view_positions 1);
 				           			    k_3_4 (get_kth_element_from_list !current_3_by_4_view_positions 2);
 					         		    k_3_4 (get_kth_element_from_list !current_3_by_4_view_positions 3);
 						        	    k_3_4 (get_kth_element_from_list !current_3_by_4_view_positions 4);
 							            k_3_4 (get_kth_element_from_list !current_3_by_4_view_positions 5);
-							           ]
+							           ])
 let rec list_of_chars_to_string clist =
   match clist with
   | [] -> ""
-  | h :: t -> (String.make 1 (get_kth_element_from_list clist 1)) ^ (list_of_chars_to_string t)
- 
-  let rec string_to_list_of_chars = (fun s ->
-    match s with
-    | "" -> []
-    | _ -> (String.get s 0) :: (string_to_list_of_chars (remove_first_letter s)))
+  | h :: t -> (String.make 1 (get_kth_element_from_list clist 1)) ^ (list_of_chars_to_string t);;
 
+								      
+let update_view = (fun m -> (update_3_by_4_view_positions current_3_by_4_view_positions m); update_3_by_4_view_letters current_3_by_4_view_letters; list_of_chars_to_string !current_3_by_4_view_letters)
