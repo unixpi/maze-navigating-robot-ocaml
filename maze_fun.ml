@@ -50,11 +50,6 @@ let make_naive_move = (fun s -> (check_if_sitting_on_letter s); if (there_is_a_l
 
 let sort_char_list_alphabetically = ()	
 let concatenate_list = ()
-	
-let rec lets_play n = match n with
-  | 0 -> print_string "End of Game"
-  | _ -> print_char (make_naive_move (read_line ())); print_newline(); (lets_play (n-1));;
-
 
 (* testing  *)
   
@@ -110,4 +105,26 @@ let rec list_of_chars_to_string clist =
   | h :: t -> (String.make 1 (get_kth_element_from_list clist 1)) ^ (list_of_chars_to_string t);;
 
 								      
-let update_view = (fun m -> (update_3_by_4_view_positions current_3_by_4_view_positions m); update_3_by_4_view_letters current_3_by_4_view_letters; list_of_chars_to_string !current_3_by_4_view_letters)
+let update_view = (fun m -> (update_3_by_4_view_positions current_3_by_4_view_positions m);
+			     update_3_by_4_view_letters current_3_by_4_view_letters; list_of_chars_to_string !current_3_by_4_view_letters)
+
+let rec lets_play n = match n with
+  | 0 -> print_string "End of Game"
+  | _ -> print_char (make_naive_move (read_line ())); print_newline()); (lets_play (n-1));;
+
+let starting_view = "A###B"
+let current_view  = list_of_chars_to_string !current_3_by_4_view_letters;;								
+
+
+let start_game = (fun n -> lets_play n starting_view) 
+
+(* let lets_play current_view =
+  let line = input_line stdin in
+    print_char (make_naive_move line);;
+ *)
+let rec lets_play n current_view = match n with
+  | 0 -> "End of Game"
+  | _ -> let move = (make_naive_move current_view) in
+         Printf.printf "%s\n%!" current_view;
+         Printf.printf "%c\n%!" move;
+         lets_play (n-1) (update_view move);;
