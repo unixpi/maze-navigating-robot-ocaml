@@ -108,23 +108,30 @@ let rec list_of_chars_to_string clist =
 let update_view = (fun m -> (update_3_by_4_view_positions current_3_by_4_view_positions m);
 			     update_3_by_4_view_letters current_3_by_4_view_letters; list_of_chars_to_string !current_3_by_4_view_letters)
 
-let rec lets_play n = match n with
-  | 0 -> print_string "End of Game"
-  | _ -> print_char (make_naive_move (read_line ())); print_newline()); (lets_play (n-1));;
-
 let starting_view = "A###B"
 let current_view  = list_of_chars_to_string !current_3_by_4_view_letters;;								
 
-
-let start_game = (fun n -> lets_play n starting_view) 
 
 (* let lets_play current_view =
   let line = input_line stdin in
     print_char (make_naive_move line);;
  *)
+		   
 let rec lets_play n current_view = match n with
   | 0 -> "End of Game"
   | _ -> let move = (make_naive_move current_view) in
          Printf.printf "%s\n%!" current_view;
          Printf.printf "%c\n%!" move;
          lets_play (n-1) (update_view move);;
+
+(* start_game allows us to play n turns on the simplest 3x4 maze, one move is all that is needed to win although our robot is
+unaware of this right now.. *)  
+let start_game = (fun n -> lets_play n starting_view) 
+
+  (* to do
+        1. figure out how to determine when game is over
+        2. create function to sort and return character trophies
+        3. improve naive algorithm (will probably need to keep track of location relative to starting point and keep track of positions of any
+           picked up letters to make sure same letter is not picked up more than once *)
+
+  
