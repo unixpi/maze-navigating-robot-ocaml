@@ -51,3 +51,9 @@ let make_naive_move = (fun s -> (check_if_sitting_on_letter s); if (there_is_a_l
 let sort_char_list_alphabetically = ()	
 let concatenate_list = ()
 	
+let rec lets_play n = match n with
+  | 0 -> print_string "End of Game"
+  | _ -> print_char (make_naive_move (read_line ())); print_newline(); (lets_play (n-1))
+		     
+  
+  
