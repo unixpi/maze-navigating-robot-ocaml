@@ -16,8 +16,10 @@ let update_current_pos p = (fun c -> match c , !p with
 				     | 'L' , (a,b) -> p := (a,b-1); p
 			   )
 
-let positions_visited_so_far = ref [(0,0)];;
+let pos_visited = ref [(0,0)];;
 
+let update_pos_visited p = (fun cp -> (p := (cp :: !p)); p);;
+  
 let letters_caught = ref [] 
 
 let remove_first_letter = (fun s -> String.sub s 1 ((String.length s) - 1))
@@ -129,20 +131,24 @@ let current_view  = list_of_chars_to_string !current_3_by_4_view_letters;;
     print_char (make_naive_move line);;
  *)
 		   
-let rec lets_play n current_view current_pos = match n with
+let rec lets_play n current_view current_pos pos_visited = match n with
   | 0 -> "End of Game"
   | _ -> let move = (make_naive_move current_view) in
          Printf.printf "%s\n%!" current_view;
          Printf.printf "%c\n%!" move;
 	 let cp = (update_current_pos current_pos move) in
-         lets_play (n-1) (update_view move) cp
+	 let pv = (update_pos_visited pos_visited !cp) in
+         lets_play (n-1) (update_view move) cp pv
 
 (* start_game allows us to play n turns on the simplest 3x4 maze, one move is all that is needed to win although our robot is
 unaware of this right now.. *)  
-let start_game = (fun n -> lets_play n starting_view current_pos) 
+let start_game = (fun n -> lets_play n starting_view current_pos pos_visited) 
 
   (* to do
         1. implement general solution algorithm
         2. create function to sort and return character trophies
-        *)
-
+   *)
+(* to reset *)		   
+(current_pos := (0,0); pos_visited := [(0,0)];
+current_3_by_4_view_positions := [6;2;10;5;7];
+current_3_by_4_view_letters := ['A';'#';'#';'#';'B'])
