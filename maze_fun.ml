@@ -39,19 +39,21 @@ let rec there_is_a_letter_we_can_move_to  = (fun s -> match (string_to_list_of_c
   | [] -> false
   | h :: t -> if (h = '#' || h = ' ') then (there_is_a_letter_we_can_move_to (remove_first_letter s))
 	      else
-		true)
+		true)  
+
 					      
 let rec join l1 l2 = match l1, l2 with
   | [], [] -> []
   | h1::t1, h2::t2 -> (h1,h2) :: join t1 t2;;
-  
+
 let view_to_tuples current_view =
   let l1 = string_to_list_of_chars (remove_first_letter current_view) in
   let l2 = ['U';'D';'L';'R'] in
-  join l1 l2;;
+  join l2 l1;;
+
 
 (* method below moves to first new square available --> looks Up, then down, then left then right *)
-let rec make_new_move view_tuples current_pos pos_list = match view_tuples, current_pos with
+let rec make_new_move view_tuples current_pos pos_list = match view_tuples, !current_pos with
   | [], _ -> 'K' (* no new move available *)
   | (_,'#') :: t , _ -> make_new_move t current_pos pos_list
   | ('U',_) :: t , (x,y) -> if (havent_visited_yet !pos_list (x,y+1)) then 'U' else  make_new_move t current_pos pos_list
@@ -83,11 +85,6 @@ let move_to_first_available_space = (fun s ->
 let make_naive_move = (fun s -> (check_if_sitting_on_letter s); if (there_is_a_letter_we_can_move_to s) then (move_to_first_available_letter s)
 				else
 				  (move_to_first_available_space s))
-let make_slightly_better_move current_pos current_view pos_list =
-  check_if_sitting_on_letter current_view;
-  if (there_is_a_new_letter current_view current_pos pos_list) then (move_to_first_available_letter s)
-  else
-    move_to_first_available_space current_view;;
 (*
 let make_even_better_move current_pos current_view pos_list =
   check_if_sitting_on_letter current_view;
@@ -156,32 +153,29 @@ let update_view = (fun m -> (update_3_by_4_view_positions current_3_by_4_view_po
 			     update_3_by_4_view_letters current_3_by_4_view_letters; list_of_chars_to_string !current_3_by_4_view_letters)
 
 let starting_view = "A###B"
-let current_view  = list_of_chars_to_string !current_3_by_4_view_letters;;								
+let current_view  = list_of_chars_to_string !current_3_by_4_view_letters;;
 
-
-(* let lets_play current_view =
-  let line = input_line stdin in
-    print_char (make_naive_move line);;
- *)
+let end_game () = "K" ^ (list_of_chars_to_string !letters_caught)
 		   
-let rec lets_play n current_view current_pos pos_visited = match n with
-  | 0 -> "End of Game"
-  | _ -> let move = (make_naive_move current_view) in
-         Printf.printf "%s\n%!" current_view;
+(* to reset *)		   
+(current_pos := (0,0); pos_visited := [(0,0)];
+current_3_by_4_view_positions := [6;2;10;5;7];
+current_3_by_4_view_letters := ['A';'#';'#';'#';'B'];
+letters_caught := [])
+
+
+let rec lets_play current_view current_pos pos_visited = 
+  let move = (make_new_move (view_to_tuples current_view) current_pos pos_visited) in
+    if move = 'K' then Printf.printf "%s\n%!" (end_game ()) else
+         (Printf.printf "%s\n%!" current_view;
          Printf.printf "%c\n%!" move;
 	 let cp = (update_current_pos current_pos move) in
 	 let pv = (update_pos_visited pos_visited !cp) in
-         lets_play (n-1) (update_view move) cp pv
+         lets_play (update_view move) cp pv)
 
-(* start_game allows us to play n turns on the simplest 3x4 maze, one move is all that is needed to win although our robot is
-unaware of this right now.. *)  
-let start_game = (fun n -> lets_play n starting_view current_pos pos_visited) 
+let start_game () = lets_play starting_view current_pos pos_visited
 
   (* to do
         1. implement general solution algorithm
         2. create function to sort and return character trophies
    *)
-(* to reset *)		   
-(current_pos := (0,0); pos_visited := [(0,0)];
-current_3_by_4_view_positions := [6;2;10;5;7];
-current_3_by_4_view_letters := ['A';'#';'#';'#';'B'])
