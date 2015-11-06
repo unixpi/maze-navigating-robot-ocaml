@@ -7,6 +7,17 @@ print_newline (* writes to standard output *)
 (* naive implementation -- always grabs first letter available (may grab same letter multiple times *)
 let rec maze_robot = ()
 
+
+let current_pos = ref (0,0)
+let update_current_pos p = (fun c -> match c , !p with
+				     | 'U' , (a,b) -> p := (a+1,b); p
+				     | 'D' , (a,b) -> p := (a-1,b); p
+				     | 'R' , (a,b) -> p := (a,b+1); p
+				     | 'L' , (a,b) -> p := (a,b-1); p
+			   )
+
+let positions_visited_so_far = ref [(0,0)];;
+
 let letters_caught = ref [] 
 
 let remove_first_letter = (fun s -> String.sub s 1 ((String.length s) - 1))
@@ -104,6 +115,7 @@ let rec list_of_chars_to_string clist =
   | [] -> ""
   | h :: t -> (String.make 1 (get_kth_element_from_list clist 1)) ^ (list_of_chars_to_string t);;
 
+
 								      
 let update_view = (fun m -> (update_3_by_4_view_positions current_3_by_4_view_positions m);
 			     update_3_by_4_view_letters current_3_by_4_view_letters; list_of_chars_to_string !current_3_by_4_view_letters)
@@ -117,18 +129,20 @@ let current_view  = list_of_chars_to_string !current_3_by_4_view_letters;;
     print_char (make_naive_move line);;
  *)
 		   
-let rec lets_play n current_view = match n with
+let rec lets_play n current_view current_pos = match n with
   | 0 -> "End of Game"
   | _ -> let move = (make_naive_move current_view) in
          Printf.printf "%s\n%!" current_view;
          Printf.printf "%c\n%!" move;
-         lets_play (n-1) (update_view move);;
+	 let cp = (update_current_pos current_pos move) in
+         lets_play (n-1) (update_view move) cp
 
 (* start_game allows us to play n turns on the simplest 3x4 maze, one move is all that is needed to win although our robot is
 unaware of this right now.. *)  
-let start_game = (fun n -> lets_play n starting_view) 
+let start_game = (fun n -> lets_play n starting_view current_pos) 
 
   (* to do
         1. implement general solution algorithm
         2. create function to sort and return character trophies
-        * )
+        *)
+
