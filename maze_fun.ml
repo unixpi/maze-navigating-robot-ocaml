@@ -129,9 +129,6 @@ unaware of this right now.. *)
 let start_game = (fun n -> lets_play n starting_view) 
 
   (* to do
-        1. figure out how to determine when game is over
+        1. implement general solution algorithm
         2. create function to sort and return character trophies
-        3. improve naive algorithm (will probably need to keep track of location relative to starting point and keep track of positions of any
-           picked up letters to make sure same letter is not picked up more than once *)
-
-  
+        * )
