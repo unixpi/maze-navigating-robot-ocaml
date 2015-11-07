@@ -1,3 +1,4 @@
+#load "str.cma";;
 (*  
 read_line  (* reads from standard input *)
 print_string  (* writes to standard output *)
@@ -40,7 +41,6 @@ let rec there_is_a_letter_we_can_move_to  = (fun s -> match (string_to_list_of_c
   | h :: t -> if (h = '#' || h = ' ') then (there_is_a_letter_we_can_move_to (remove_first_letter s))
 	      else
 		true)  
-
 					      
 let rec join l1 l2 = match l1, l2 with
   | [], [] -> []
@@ -50,16 +50,19 @@ let view_to_tuples current_view =
   let l1 = string_to_list_of_chars (remove_first_letter current_view) in
   let l2 = ['U';'D';'L';'R'] in
   join l2 l1;;
-
-
+  
 (* method below moves to first new square available --> looks Up, then down, then left then right *)
 let rec make_new_move view_tuples current_pos pos_list = match view_tuples, !current_pos with
   | [], _ -> 'K' (* no new move available *)
   | (_,'#') :: t , _ -> make_new_move t current_pos pos_list
-  | ('U',_) :: t , (x,y) -> if (havent_visited_yet !pos_list (x,y+1)) then 'U' else  make_new_move t current_pos pos_list
-  | ('D',_) :: t , (x,y) -> if (havent_visited_yet !pos_list (x,y-1)) then 'D' else  make_new_move t current_pos pos_list
-  | ('L',_) :: t , (x,y) -> if (havent_visited_yet !pos_list (x-1,y)) then 'L' else  make_new_move t current_pos pos_list
-  | ('R',_) :: t , (x,y) -> if (havent_visited_yet !pos_list (x+1,y)) then 'R' else  make_new_move t current_pos pos_list
+  | ('U',char) :: t , (x,y) -> if (havent_visited_yet !pos_list (x,y+1)) then 'U'
+			       else  make_new_move t current_pos pos_list
+  | ('D',char) :: t , (x,y) -> if (havent_visited_yet !pos_list (x,y-1)) then 'D'
+			       else  make_new_move t current_pos pos_list
+  | ('L',char) :: t , (x,y) -> if (havent_visited_yet !pos_list (x-1,y)) then 'L'
+			       else  make_new_move t current_pos pos_list
+  | ('R',char) :: t , (x,y) -> if (havent_visited_yet !pos_list (x+1,y)) then 'R'
+			       else  make_new_move t current_pos pos_list
   
 			       
 let check_if_sitting_on_letter = (fun s -> match (String.get s 0) with
@@ -146,8 +149,6 @@ let rec list_of_chars_to_string clist =
   match clist with
   | [] -> ""
   | h :: t -> (String.make 1 (get_kth_element_from_list clist 1)) ^ (list_of_chars_to_string t);;
-
-
 								      
 let update_view = (fun m -> (update_3_by_4_view_positions current_3_by_4_view_positions m);
 			     update_3_by_4_view_letters current_3_by_4_view_letters; list_of_chars_to_string !current_3_by_4_view_letters)
@@ -155,16 +156,28 @@ let update_view = (fun m -> (update_3_by_4_view_positions current_3_by_4_view_po
 let starting_view = "A###B"
 let current_view  = list_of_chars_to_string !current_3_by_4_view_letters;;
 
-let end_game () = "K" ^ (list_of_chars_to_string !letters_caught)
-		   
+let rec sort lst =
+  match lst with
+    [] -> []
+  | head :: tail -> insert head (sort tail)
+and insert elt lst =
+  match lst with
+    [] -> [elt]
+  | head :: tail -> if elt <= head then elt :: lst else head :: insert elt tail
+
+let end_game () = "K" ^ (list_of_chars_to_string (sort(!letters_caught)))
+
+
+			  
 (* to reset *)		   
 (current_pos := (0,0); pos_visited := [(0,0)];
 current_3_by_4_view_positions := [6;2;10;5;7];
 current_3_by_4_view_letters := ['A';'#';'#';'#';'B'];
-letters_caught := [])
+letters_caught := []);;
 
 
-let rec lets_play current_view current_pos pos_visited = 
+let rec lets_play current_view current_pos pos_visited =
+  check_if_sitting_on_letter current_view;
   let move = (make_new_move (view_to_tuples current_view) current_pos pos_visited) in
     if move = 'K' then Printf.printf "%s\n%!" (end_game ()) else
          (Printf.printf "%s\n%!" current_view;
