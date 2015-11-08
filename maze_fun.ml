@@ -77,9 +77,25 @@ let rec make_new_move view_tuples current_pos pos_list = match view_tuples, !cur
 			       else  make_new_move t current_pos pos_list
   | ('R',char) :: t , (x,y) -> if (havent_visited_yet !pos_list (x+1,y)) then 'R'
 			       else  make_new_move t current_pos pos_list
- *)			       
+ *)
+
+let letters_and_locations = ref []
+
+let rec contains list e = match list with
+  | [] -> false
+  | h :: t -> if h = e then true else contains t e
+	    
+      
 let check_if_sitting_on_letter = (fun s -> match (String.get s 0) with
 					   | '#' -> (letters_caught := !letters_caught)
 					   | ' ' -> (letters_caught := !letters_caught)
-					   | _ -> (letters_caught := ((String.get s 0) :: !letters_caught)))
+					   | _ -> let letter = String.get s 0 in
+						  let letter_and_location = (letter, !current_pos) in
+						  if contains !letters_and_locations letter_and_location then
+						    (letters_caught := !letters_caught)
+						  else
+						    (letters_and_locations := letter_and_location :: !letters_and_locations; 
+						    (letters_caught := ((letter) :: !letters_caught))))
 
+
+				

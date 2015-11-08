@@ -150,7 +150,8 @@ let current_view_h  = list_of_chars_to_string !current_6_by_13_view_letters;;
 (current_pos := (0,0); pos_visited := [(0,0)];
 current_6_by_13_view_positions := [18;5;31;17;19];
 current_6_by_13_view_letters := ['A';'#';' ';' ';' '];
-letters_caught := []);;
+letters_caught := [];
+letters_and_locations := []);;
 
 let update_view1 = (fun m -> (update_6_by_13_view_positions current_6_by_13_view_positions m);
 			     update_6_by_13_view_letters current_6_by_13_view_letters; list_of_chars_to_string !current_6_by_13_view_letters)
