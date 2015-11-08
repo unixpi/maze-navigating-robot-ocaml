@@ -158,7 +158,7 @@ let update_view1 = (fun m -> (update_6_by_13_view_positions current_6_by_13_view
   
 let rec lets_play_harder current_view current_pos pos_visited =
   check_if_sitting_on_letter current_view;
-  let move = (make_move (view_to_tuples current_view) current_pos pos_visited) in
+  let move = (make_new_move (view_to_tuples current_view) current_pos pos_visited) in
     if move = 'K' then Printf.printf "%s\n%!" (end_game ()) else
          (Printf.printf "%s\n%!" current_view;
          Printf.printf "%c\n%!" move;

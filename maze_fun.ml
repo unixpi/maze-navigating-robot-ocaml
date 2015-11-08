@@ -49,7 +49,22 @@ let all_available_moves view_tuples current_pos pos_list =
 			      else aux t cp pl list_of_moves_available (n-1)
   in aux view_tuples current_pos pos_list [] 4
 
- 
+let moves_made_so_far = ref [];;
+
+let backtrack moves_made = match !moves_made with
+  | [] -> 'K' (* end game and return character trophies *)
+  | 'U' :: t -> moves_made := t; 'D'
+  | 'D' :: t -> moves_made := t; 'U'
+  | 'L' :: t -> moves_made := t; 'R'
+  | 'R' :: t -> moves_made := t; 'L'
+
+let make_move view_tuples current_pos pos_list =
+  let moves_available = (all_available_moves view_tuples current_pos pos_list) in
+  match moves_available with
+  | [] -> backtrack moves_made_so_far
+  | h :: t -> moves_made_so_far := h :: !moves_made_so_far; h;;
+   
+(* 
 (* method below moves to first new square available --> looks Up, then down, then left then right *)
 let rec make_new_move view_tuples current_pos pos_list = match view_tuples, !current_pos with
   | [], _ -> 'K' (* no new move available *)
@@ -62,8 +77,7 @@ let rec make_new_move view_tuples current_pos pos_list = match view_tuples, !cur
 			       else  make_new_move t current_pos pos_list
   | ('R',char) :: t , (x,y) -> if (havent_visited_yet !pos_list (x+1,y)) then 'R'
 			       else  make_new_move t current_pos pos_list
-  
-			       
+ *)			       
 let check_if_sitting_on_letter = (fun s -> match (String.get s 0) with
 					   | '#' -> (letters_caught := !letters_caught)
 					   | ' ' -> (letters_caught := !letters_caught)
